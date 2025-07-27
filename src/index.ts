@@ -1,6 +1,12 @@
 import express from 'express';
 const app = express();
 import { UserModel } from './db';
+import jwt from 'jsonwebtoken';
+import { userMiddleware } from './middleware';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 
 // to parse JSON request bodies
 app.use(express.json());
@@ -30,6 +36,7 @@ app.post('/api/v1/signup', async (req, res)=>{
 
 // Handles user login
 app.post('/api/v1/signin', async (req, res)=>{
+    // TODO >> validation, password hashing
     const username = req.body.username;
     const password = req.body.password;
 
@@ -52,12 +59,17 @@ app.post('/api/v1/signin', async (req, res)=>{
             })
         }
 
+        const token = jwt.sign({
+            userid: user._id
+        }, JWT_USER_SECRET!);
+
         return res.status(200).json({
             message: "Login successful.",
             user: {
                 userId: user._id,
                 username: user.username
-            }
+            },
+            authorization: token
         })
     } catch(e) {
         console.error(`Unexpected error during login process: ${e}`);
@@ -68,22 +80,22 @@ app.post('/api/v1/signin', async (req, res)=>{
 })
 
 // Handles adding new content
-app.post('/api/v1/content', (req, res)=>{
+app.post('/api/v1/content', userMiddleware, (req, res)=>{
 
 })
 
 // Fetches all existing documents (no pagination)
-app.get('/api/v1/content', (req, res)=>{
+app.get('/api/v1/content', userMiddleware, (req, res)=>{
 
 })
 
 // Deletes a document
-app.delete('/api/v1/content', (req, res)=>{
+app.delete('/api/v1/content', userMiddleware, (req, res)=>{
 
 })
 
 // Creates a sharable link for the user's second brain
-app.post('/api/v1/brain/share', (req, res)=>{
+app.post('/api/v1/brain/share', userMiddleware, (req, res)=>{
 
 })
 
