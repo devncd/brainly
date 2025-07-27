@@ -3,6 +3,7 @@ const app = express();
 import { UserModel } from './db';
 import jwt from 'jsonwebtoken';
 import { userMiddleware } from './middleware';
+import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -18,9 +19,13 @@ app.post('/api/v1/signup', async (req, res)=>{
     const password = req.body.password;
 
     try {
+        // hash password
+        const saltRounds = 5;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
         await UserModel.create({
             username,
-            password
+            password: hashedPassword
         });
     } catch(e) {
         console.error(`Unexpected error during signup process: ${e}`)
@@ -51,11 +56,12 @@ app.post('/api/v1/signin', async (req, res)=>{
             })
         }
 
-        const isMatch = (password === user.password);
+        // verify password
+        const isMatch = await bcrypt.compare(password, user.password);
 
         if(!isMatch){
             return res.status(401).json({
-                message: "Invalid email or password."
+                message: "Invalid username or password."
             })
         }
 
