@@ -1,11 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import dotenv from 'dotenv';
-dotenv.config();
+import { config } from '../conifg/env';
 
-const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
-
-export const userMiddleware = (req: Request, res: Response, next: NextFunction)=>{
+export const authMiddleware = (req: Request, res: Response, next: NextFunction)=>{
     const token = req.headers['authorization'];
 
     if(token == null){
@@ -14,7 +11,7 @@ export const userMiddleware = (req: Request, res: Response, next: NextFunction)=
         })
     }
 
-    const decoded = jwt.verify(token, JWT_USER_SECRET!);
+    const decoded = jwt.verify(token, config.JWT_USER_SECRET!);
 
     if(decoded){
         //@ts-ignore
