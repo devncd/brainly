@@ -80,6 +80,29 @@ contentRouter.get('/', authMiddleware, async (req, res)=>{
 })
 
 // Deletes a document
-contentRouter.delete('/', authMiddleware, (req, res)=>{
+contentRouter.delete('/:id', authMiddleware, async (req, res)=>{
+    const {id}= req.params;
+    const userId = req.userId;
 
+    try {
+        const result = await ContentModel.deleteOne({
+            _id: id,
+            userId: userId
+        });
+
+        if(result.deletedCount === 0){
+            return res.status(400).json({
+                message: "Document not found or not authorized."
+            })
+        }
+
+        return res.status(200).json({
+            message: "Document deleted."
+        })
+    } catch(e) {
+        console.error("Error while deleting document: " + e);
+        return res.status(500).json({
+            message: "Internal server error. Could not delete the document."
+        })
+    }
 })
