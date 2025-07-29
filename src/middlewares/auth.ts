@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { config } from '../conifg/env';
 
@@ -11,15 +11,21 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction)=
         })
     }
 
-    const decoded = jwt.verify(token, config.JWT_USER_SECRET!);
+    try {
+        const decoded = jwt.verify(token, config.JWT_USER_SECRET!);
 
-    if(decoded){
-        //@ts-ignore
-        req.userId = decoded._id;
-        next()
-    } else {
+        if(typeof decoded === "object" && decoded && "userId" in decoded){
+            req.userId = (decoded as JwtPayload).userId;
+            next()
+        } else {
+            return res.status(401).json({
+                message: "Unauthorized access. Invalid token."
+            })
+        }
+    } catch(e) {
         return res.status(401).json({
-            message: "Unauthorized access. You're not logged in."
-        })
+                message: "Unauthorized access. Invalid token."
+            })
     }
+    
 }

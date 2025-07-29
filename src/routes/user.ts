@@ -61,7 +61,7 @@ userRouter.post('/signin', validateLogin, async (req, res)=>{
         }
 
         const token = jwt.sign({
-            userid: user._id
+            userId: user._id
         }, config.JWT_USER_SECRET!);
 
         return res.status(200).json({
