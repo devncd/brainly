@@ -2,9 +2,10 @@ import express from 'express';
 const app = express();
 import { UserModel } from './db';
 import jwt from 'jsonwebtoken';
-import { userMiddleware } from './middleware';
+import { userMiddleware } from './middlewares/auth'; // auth middleware
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import { validateLogin, validateSignup } from './middlewares/validate'; // Zod input validation middlewares
 dotenv.config();
 
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
@@ -13,10 +14,8 @@ const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 app.use(express.json());
 
 // Registers a new user
-app.post('/api/v1/signup', async (req, res)=>{
-    // todo >> zod validation, bcrypt password hashing
-    const username = req.body.username;
-    const password = req.body.password;
+app.post('/api/v1/signup', validateSignup, async (req, res)=>{
+    const {username, password} = req.body;
 
     try {
         // hash password
@@ -40,10 +39,8 @@ app.post('/api/v1/signup', async (req, res)=>{
 })
 
 // Handles user login
-app.post('/api/v1/signin', async (req, res)=>{
-    // TODO >> validation, password hashing
-    const username = req.body.username;
-    const password = req.body.password;
+app.post('/api/v1/signin', validateLogin, async (req, res)=>{
+    const {username, password} = req.body;
 
     try {
         const user = await UserModel.findOne({
@@ -71,10 +68,6 @@ app.post('/api/v1/signin', async (req, res)=>{
 
         return res.status(200).json({
             message: "Login successful.",
-            user: {
-                userId: user._id,
-                username: user.username
-            },
             authorization: token
         })
     } catch(e) {
