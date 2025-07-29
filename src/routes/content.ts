@@ -47,8 +47,36 @@ contentRouter.post('/', authMiddleware, validateContent, async (req, res)=>{
 })
 
 // Fetches all existing documents (no pagination)
-contentRouter.get('/', authMiddleware, (req, res)=>{
+contentRouter.get('/', authMiddleware, async (req, res)=>{
+    const userId = req.userId;
 
+    try {
+        const docs = await ContentModel.find({
+            userId
+        }).populate('tags userId');
+
+        return res.status(200).json({
+            message: "Docs retrieved successfully",
+            documents: docs.map((doc) => ({
+                link: doc.link,
+                type: doc.type,
+                title: doc.title,
+                tags: doc.tags.map((tag: any) => ({
+                    // Exclude _id from tag
+                    title: tag.title
+                })),
+                user: {
+                    // Exclude _id from tag
+                    username: (doc.userId as any).username
+                }
+            }))
+        })
+    } catch(e) {
+        console.error("Error while fetching user's documents: " + e);
+        return res.status(500).json({
+            message: "An unexpected error occurred. Please try again later."
+        })
+    }
 })
 
 // Deletes a document
