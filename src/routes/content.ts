@@ -3,6 +3,8 @@ import {Router} from 'express';
 import { validateContent } from '../middlewares/validate';
 import { ContentModel } from '../models/content.model';
 import { TagModel } from '../models/tag.model';
+import jwt from 'jsonwebtoken';
+import { config } from '../conifg/env';
 export const contentRouter = Router();
 
 // Handles adding new content
@@ -104,5 +106,29 @@ contentRouter.delete('/:id', authMiddleware, async (req, res)=>{
         return res.status(500).json({
             message: "Internal server error. Could not delete the document."
         })
+    }
+})
+
+
+// Creates a sharable link for the user's specified collection
+contentRouter.get('/share/:contentId', authMiddleware, (req, res)=>{
+    // Logic: response should include {userId, contentId} with JWT signature
+    // Anyone with a shareHash (a jwt payload) can access the collection
+    const userId = req.userId;
+    const contentId = req.params.contentId;
+
+    try{
+        const shareHash = jwt.sign({
+            userId: userId,
+            contentId: contentId
+        }, config.JWT_USER_SECRET);
+
+        return res.status(200).json({
+            message: "Share link created.",
+            shareHash: shareHash
+        });
+    } catch(e){
+        console.error("Error creating share link: ", e);
+        return res.status(500).json({ message: "Failed to create share link." })
     }
 })
