@@ -4,7 +4,7 @@
 
 ---
 
-**Status:** 🚧 In Development  
+**Status:** 🚧 In Development    
 **Type:** Full Stack Portfolio Project
 
 ---
@@ -18,7 +18,7 @@
 
 ## Planned Features
 
-Based on the current backend (`routes/`):
+Based on the current backend (`brainly-backend/routes/`):
 
 - **User Authentication**
   - Sign up and sign in with secure password hashing and JWT-based authentication.
