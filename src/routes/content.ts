@@ -5,6 +5,7 @@ import { ContentModel } from '../models/content.model';
 import { TagModel } from '../models/tag.model';
 import jwt from 'jsonwebtoken';
 import { config } from '../conifg/env';
+import { UserModel } from '../models/user.model';
 export const contentRouter = Router();
 
 // Handles adding new content
@@ -55,22 +56,22 @@ contentRouter.get('/', authMiddleware, async (req, res)=>{
     try {
         const docs = await ContentModel.find({
             userId
-        }).populate('tags userId');
+        }).populate('tags');
+
+        const user = await UserModel.findOne({
+            _id: userId
+        });
+
+        const username = (user as any).username;
 
         return res.status(200).json({
-            message: "Docs retrieved successfully",
-            documents: docs.map((doc) => ({
+            message: "Collections retrieved successfully",
+            username: username,
+            collections: docs.map((doc) => ({
                 link: doc.link,
                 type: doc.type,
                 title: doc.title,
-                tags: doc.tags.map((tag: any) => ({
-                    // Exclude _id from tag
-                    title: tag.title
-                })),
-                user: {
-                    // Exclude _id from tag
-                    username: (doc.userId as any).username
-                }
+                tags: doc.tags.map((tag: any) => (tag.title))
             }))
         })
     } catch(e) {
