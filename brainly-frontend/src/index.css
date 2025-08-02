@@ -1,1 +1,63 @@
 @import "tailwindcss";
+/* This tells Tailwind to activate the `dark:` variant when a `.dark` class is on a parent element. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  /* :root defines the default (light) theme variables - Updated to a strict, neutral grayscale palette */
+  :root {
+    /* App body */
+    --color-app-bg: #F9F8F7;
+
+    /* Primary Button Colors - A solid, high-contrast button for the main action */
+    --color-primary-base: #32302C;
+    --color-on-primary: #ffffff;
+    --color-primary-hover: #4A4845; /* A slightly lighter dark gray for hover */
+    --color-primary-focus: #32302C;
+    --color-disabled-bg: #F1F0EF;
+    --color-disabled-text: #A6A4A1;
+
+    /* Secondary Button Colors - The subtle, Notion-style button */
+    --color-secondary-base: transparent;
+    --color-on-secondary: #32302C;
+    --color-secondary-hover: #F1F0EF; /* Background appears on hover */
+    --color-secondary-focus: #DFDFDE;
+    --color-secondary-disabled-text: #A6A4A1;
+  }
+
+  /* The .dark selector defines the variables that will be applied when dark mode is active */
+  .dark {
+    /* App body */
+    --color-app-bg: #000000; /* A softer dark background */
+
+    /* Primary Button Colors - A solid, high-contrast button */
+    --color-primary-base: #e7e9ea;
+    --color-on-primary: #0f1419;
+    --color-primary-hover: #d7dbdc;
+    --color-primary-focus: #e7e9ea;
+    --color-disabled-bg: #0f1419;
+    --color-disabled-text: #536471;
+
+    /* Secondary Button Colors - A subtle, Notion-style button for dark mode */
+    --color-secondary-base: transparent;
+    --color-on-secondary: #e7e9ea;
+    --color-secondary-hover: #2A2A2A; /* A subtle dark gray background on hover */
+    --color-secondary-focus: #3C3C3C;
+    --color-secondary-disabled-text: #536471;
+  }
+}
+
+/* This block tells Tailwind to generate utility classes from our CSS variables. No changes needed here. */
+@theme {
+  --color-app-bg: var(--color-app-bg);
+  --color-primary-base: var(--color-primary-base);
+  --color-on-primary: var(--color-on-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-focus: var(--color-primary-focus);
+  --color-disabled-bg: var(--color-disabled-bg);
+  --color-disabled-text: var(--color-disabled-text);
+  --color-secondary-base: var(--color-secondary-base);
+  --color-on-secondary: var(--color-on-secondary);
+  --color-secondary-hover: var(--color-secondary-hover);
+  --color-secondary-focus: var(--color-secondary-focus);
+  --color-secondary-disabled-text: var(--color-secondary-disabled-text);
+}
