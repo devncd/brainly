@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import './App.css'
 import { Button } from './components/Button';
 import { ThemeToggle } from './components/ThemeToggle';
