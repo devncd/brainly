@@ -7,8 +7,8 @@ export const ThemeToggle = ()=>{
 
     return (
         <Button
-            variant={'primary'}
-            size={'sm'}
+            variant={'secondary'}
+            size={'md'}
             isIconOnly={true}
             startIcon={DarkModeIcon}
             onClick={toggleTheme} />

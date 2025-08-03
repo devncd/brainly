@@ -1,7 +1,7 @@
 import './App.css'
 import { Button } from './components/Button';
 import { ThemeToggle } from './components/ThemeToggle';
-import { PlusIcon } from './assets/icons';
+import { PlusIcon, ShareIcon } from './assets/icons';
 
 function App() {
 
@@ -9,31 +9,23 @@ function App() {
     <div className='bg-app-bg h-screen'>
       <div className='p-4 flex justify-end items-center space-x-2'>
 
-        <ThemeToggle/>
         
-        <Button 
+        
+        <Button
+          variant='secondary' 
+          size='md' 
+          startIcon={ShareIcon}
+          text='Share Brain'
+          onClick={()=>console.log("Share button clicked.")} />
+
+          <Button 
           variant='primary' 
-          size='sm' 
+          size='md' 
           startIcon={PlusIcon}
           text='Add Content'
           onClick={()=>console.log("Buy button clicked.")} />
-        <Button
-          variant='secondary' 
-          size='sm' 
-          text='Share'
-          onClick={()=>console.log("Share button clicked.")} />
-        <Button
-          disabled={true}
-          variant='primary' 
-          size='sm' 
-          text='Disabled'
-          onClick={()=>{}} />
-        <Button
-          disabled={true}
-          variant='secondary' 
-          size='sm' 
-          text='Disabled'
-          onClick={()=>{}} />
+
+          <ThemeToggle/>
       </div>
     </div>
   )
