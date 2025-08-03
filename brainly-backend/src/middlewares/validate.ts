@@ -1,7 +1,6 @@
 import { LoginSchema, SignupSchema, LoginInput, SignupInput } from '../schemas/auth.schema';
 import { Request, Response, NextFunction } from 'express';
 import { ContentSchema, ContentType } from '../schemas/content.schema';
-import path from 'path';
 
 export const validateLogin = (req: Request, res: Response, next: NextFunction)=>{
     const { username, password } = req.body as LoginInput;

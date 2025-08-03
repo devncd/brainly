@@ -1,10 +1,11 @@
+import { randomString } from '../utils/randomString';
+import { LinkModel } from '../models/link.model';
+import mongoose from 'mongoose';
 import { authMiddleware } from '../middlewares/auth';
 import {Router} from 'express';
 import { validateContent } from '../middlewares/validate';
 import { ContentModel } from '../models/content.model';
 import { TagModel } from '../models/tag.model';
-import jwt from 'jsonwebtoken';
-import { config } from '../conifg/env';
 import { UserModel } from '../models/user.model';
 export const contentRouter = Router();
 
@@ -111,25 +112,69 @@ contentRouter.delete('/:id', authMiddleware, async (req, res)=>{
 })
 
 
-// Creates a sharable link for the user's specified collection
-contentRouter.get('/share/:contentId', authMiddleware, (req, res)=>{
-    // Logic: response should include {userId, contentId} with JWT signature
-    // Anyone with a shareHash (a jwt payload) can access the collection
-    const userId = req.userId;
-    const contentId = req.params.contentId;
+// Creates a public shareable link for a collection
+contentRouter.post('/share', authMiddleware, async (req, res)=>{
+    const userId: string | undefined = req.userId;
+    // user passes share:true|false to share|unshare a collection
+    const { share, contentId } = req.body;
 
     try{
-        const shareHash = jwt.sign({
+        if(share){
+            // Check if contentId is a valid ObjectId string (Format check)
+            if(!mongoose.Types.ObjectId.isValid(contentId)){
+                return res.status(400).json({ message: "Invalid content ID." });
+            }
+
+            // validate collection (Existence check)
+            const contentExists = await ContentModel.findOne({
+                _id: contentId
+            });
+
+            if(!contentExists){
+                return res.status(400).json({ message: "The collection you are trying to share doesn't exist." })
+            }
+
+            // check and return share link if it already exists
+            const linkExists = await LinkModel.findOne({
+                contentId: contentId
+            });
+
+            if(linkExists){
+                return res.status(200).json({
+                    message: "Public link for collection generated.",
+                    shareLink: '/shared/c/' + linkExists.hash
+                })
+            }
+            
+            // generate a random share hash
+            const hash: string = randomString(20);
+
+            // store link
+            await LinkModel.create({
+                userId: userId,
+                contentId: contentId,
+                hash: hash,
+                shareOne: true // to share a single collection
+            });
+            
+            return res.status(200).json({
+                message: "Public link for collection generated.",
+                shareLink: '/share/c/' + hash
+            })
+        }
+
+        // or else delete the link for this collection
+        await LinkModel.deleteOne({
             userId: userId,
             contentId: contentId
-        }, config.JWT_USER_SECRET);
+        })
 
         return res.status(200).json({
-            message: "Share link created.",
-            shareHash: shareHash
+            message: "Collection unshared."
         });
+
     } catch(e){
-        console.error("Error creating share link: ", e);
-        return res.status(500).json({ message: "Failed to create share link." })
+        console.error("Error sharing a collection: ", e);
+        return res.status(500).json({ message: "Failed to share your collection." })
     }
 })

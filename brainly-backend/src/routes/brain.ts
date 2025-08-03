@@ -1,69 +1,59 @@
-import jwt from 'jsonwebtoken';
-import {config} from '../conifg/env';
+import { randomString } from '../utils/randomString';
 import { authMiddleware } from '../middlewares/auth';
 import {Router} from 'express';
-import { ContentModel } from '../models/content.model';
-import { UserModel } from '../models/user.model';
+import { LinkModel } from '../models/link.model';
 export const brainRouter = Router();
 
-// Creates a sharable link for the user's second brain
-brainRouter.get('/share', authMiddleware, (req, res)=>{
-    // Logic: response should include userId with JWT signature
-    // Anyone with a shareHash (a jwt payload) can access the user's collections
-    const userId = req.userId;
+// Creates a public sharable link for the user's second brain
+brainRouter.post('/share', authMiddleware, async (req, res)=>{
+    // user passes true or false to share or unshare their brain
+    const share: boolean = req.body.share;
+    const userId: string | undefined = req.userId;
 
     try {
-        const shareHash = jwt.sign({
-            userId: userId
-        }, config.JWT_USER_SECRET);
+        if(share){
+            // check and return public link if it already exists
+            const linkExists = await LinkModel.findOne({
+                userId: userId,
+                shareOne: false
+            })
+
+            if(linkExists){
+                return res.status(200).json({
+                    message: "Your second brain is now public.",
+                    shareLink: '/shared/b/' + linkExists.hash
+                })
+            }
+
+            // Create a new link
+            // generate a random share hash
+            const hash: string = randomString(20);
+
+            // store link
+            await LinkModel.create({
+                userId: userId,
+                hash: hash,
+                shareOne: false // to share entire brain
+            });
+            
+            return res.status(200).json({
+                message: "Your second brain is now public.",
+                shareLink: '/share/' + hash
+            })
+        }
+
+        // or else delete link
+        await LinkModel.deleteOne({
+            userId: userId,
+            shareOne: false // to filter only shared-brain link
+        })
 
         return res.status(200).json({
-            message: "Share link created.",
-            shareHash: shareHash
+            message: "Your second brain is now private."
         });
+
     } catch(e) {
-        console.error("Error creating share link: ", e);
-        return res.status(500).json({ message: "Failed to create share link." })
-    }
-})
-
-// Fetches the content of another user's second brain
-brainRouter.get('/:shareLink', async (req, res)=>{
-    const shareHash = req.params.shareLink;
-    try {
-        const decoded = jwt.verify(shareHash, config.JWT_USER_SECRET);
-
-        if(typeof decoded === 'object' && decoded && 'userId' in decoded){
-            const userId = decoded.userId;
-            const collections = await ContentModel.find({
-                userId: userId
-            }).populate('tags userId');
-
-            // remove objectIds
-            const finalCollections = collections.map((col)=> (
-                {
-                    title: col.title,
-                    type: col.type,
-                    link: col.link,
-                    tags: col.tags.map(tag => ((tag as any).title))
-                }
-            ));
-
-            const user = await UserModel.findOne({
-                _id: userId
-            });
-            const username = (user as any).username;
-
-            return res.status(200).json({
-                message: "Collections retrieved succesfully.",
-                sharedBy: username,
-                collections: finalCollections
-            });
-        } else {
-            return res.status(400).json({message: "Share link has expired."});
-        }
-    } catch(e) {
-        console.error("Error accessing a share link: ", e);
-        return res.status(500).json({message: "Failed to access share link."});
+        console.error("Error sharing brain: ", e);
+        return res.status(500).json({ message: "Failed to share/unshare your second brain." })
     }
 })

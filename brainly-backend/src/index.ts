@@ -3,6 +3,7 @@ const app = express();
 import { userRouter } from './routes/user';
 import { contentRouter } from './routes/content';
 import { brainRouter } from './routes/brain';
+import { sharedRouter } from './routes/shared';
 
 // to parse JSON request bodies
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction)=>{
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/content', contentRouter);
 app.use('/api/v1/brain', brainRouter);
+app.use('/shared', sharedRouter);
 
 // Global error handler (for other errors)
 app.use((err: Error, req: Request, res: Response, next: NextFunction)=>{
