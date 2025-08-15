@@ -8,6 +8,9 @@
     /* App body */
     --color-app-bg: #F9F8F7;
 
+    /* Card */
+    --color-card-background: #FFFFFF;
+
     /* Primary Button Colors - A solid, high-contrast button for the main action */
     --color-primary-base: #32302C;
     --color-on-primary: #ffffff;
@@ -29,6 +32,9 @@
     /* App body */
     --color-app-bg: #000000; /* A softer dark background */
 
+    /* Card */
+    --color-card-background: #000000;
+
     /* Primary Button Colors - A solid, high-contrast button */
     --color-primary-base: #e7e9ea;
     --color-on-primary: #0f1419;
@@ -49,6 +55,7 @@
 /* This block tells Tailwind to generate utility classes from our CSS variables. No changes needed here. */
 @theme {
   --color-app-bg: var(--color-app-bg);
+  --color-card-background: var(--color-card-background);
   --color-primary-base: var(--color-primary-base);
   --color-on-primary: var(--color-on-primary);
   --color-primary-hover: var(--color-primary-hover);
@@ -60,4 +67,23 @@
   --color-secondary-hover: var(--color-secondary-hover);
   --color-secondary-focus: var(--color-secondary-focus);
   --color-secondary-disabled-text: var(--color-secondary-disabled-text);
+}
+
+
+/* --- NEW UTILITY CLASS TO HIDE SCROLLBARS --- */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+.tweet-embed .react-tweet-theme {
+  --tweet-body-font-size: 1rem;
+  --tweet-header-font-size: 1rem;
+  --tweet-container-margin: 1.5rem 0;
+  --tweet-body-line-height: 1rem;
 }
