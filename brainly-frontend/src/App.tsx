@@ -1,15 +1,17 @@
 import './App.css'
 import { Dashboard } from './pages/dashboard';
 import { Navbar } from './components/Navbar';
+import { Sidebar } from './components/Sidebar';
 
 function App() {
 
   return (
-    <div className='bg-app-bg min-h-screen'>
-      {/* top navigation bar */}
-      <Navbar />
-      {/* collections */}
-      <Dashboard />
+    <div className='bg-app-bg min-h-screen flex flex-row'>
+      <Sidebar/>
+      <div className='flex flex-col flex-1 ml-46'>
+        <Navbar/>
+        <Dashboard/>
+      </div>
     </div>
   )
 }

@@ -8,6 +8,9 @@
     /* App body */
     --color-app-bg: #F9F8F7;
 
+    /* Sidebar */
+    --color-sidebar-bg: #FFFFFF;
+
     /* Card */
     --color-card-background: #FFFFFF;
 
@@ -32,6 +35,9 @@
     /* App body */
     --color-app-bg: #000000; /* A softer dark background */
 
+      /* Sidebar */
+    --color-sidebar-bg: #000000;
+
     /* Card */
     --color-card-background: #000000;
 
@@ -55,6 +61,7 @@
 /* This block tells Tailwind to generate utility classes from our CSS variables. No changes needed here. */
 @theme {
   --color-app-bg: var(--color-app-bg);
+  --color-sidebar-bg: var(--color-sidebar-bg);
   --color-card-background: var(--color-card-background);
   --color-primary-base: var(--color-primary-base);
   --color-on-primary: var(--color-on-primary);
