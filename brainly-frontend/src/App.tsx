@@ -8,7 +8,7 @@ function App() {
   return (
     <div className='bg-app-bg min-h-screen flex flex-row'>
       <Sidebar/>
-      <div className='flex flex-col flex-1 ml-46'>
+      <div className='flex flex-col flex-1 ml-56'>
         <Navbar/>
         <Dashboard/>
       </div>

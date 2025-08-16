@@ -4,7 +4,7 @@ import { SidebarItem } from "./SidebarItem"
 
 export const Sidebar = () => {
     return (
-        <div className="w-46 bg-sidebar-bg fixed left-0 top-0 h-screen p-4">
+        <div className="w-56 bg-sidebar-bg fixed left-0 top-0 h-screen p-4 border-r border-gray-100 dark:border-gray-900">
             <Logo/>
             <div className="mt-8">
                 <SidebarItem icon={YoutubeIcon} title="YouTube" url={"/c/youtube"}/>
